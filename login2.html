@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login de Usuario</title>
+  <link rel="stylesheet" href="style2.css">
+  
+</head>
+
+<body>
+  <div class="app" id="app">
+
+  <!-- ───────────── Login ───────────── -->
+  <div id="view-login" class="login-wrap">
+    <div class="login card panel">
+      <div class="row" style="justify-content:space-between; align-items:center;">
+        <div class="brand-lg">Yair Inventario</div>
+        <span class="pill">Versión MVP</span>
+      </div>
+      <p class="muted">Inicia sesión para continuar.</p>
+
+      <div class="grid">
+        <div class="field">
+          <label class="label">Correo</label>
+          <input id="email" class="input" type="email" autocomplete="username" placeholder="tu correo" />
+        </div>
+        <div class="field">
+          <label class="label">Contraseña</label>
+          <input id="password" class="input" type="password" autocomplete="current-password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:.5rem; justify-content:space-between">
+        <label class="row" style="gap:.5rem">
+          <input type="checkbox" id="remember" />
+          <span class="muted">Recordarme</span>
+        </label>        
+      </div>
+
+      <div class="row" style="margin-top:1rem; justify-content:flex-end;">
+        <button id="btnLogin" class="btn primary">Entrar</button>
+      </div>
+            
+    </div>
+  </div>
+  <script>
+    let codigos=false;
+    let codigosCacheExists = false;
+
+    window.addEventListener('DOMContentLoaded', () => {      
+      sessionStorage.removeItem('elInventario');
+      console.log("Se ha eliminado la información de sesión anterior.....");      
+      const codigosJSON = localStorage.getItem('codigosJSON');
+      const codigosVersionLocal = localStorage.getItem('codigosVersionServer');       
+      console.log("codigosVersionLocal ", codigosVersionLocal);
+      console.log("codigosJSON ",codigosJSON);
+      codigosCacheExists = !!(codigosJSON && codigosVersionLocal);
+      console.log("La flag a enviar de codigosCacheExists: ", codigosCacheExists); 
+    });
+
+    document.getElementById('btnLogin').addEventListener('click', async () => {
+      const boton = document.getElementById('btnLogin');
+      boton.textContent = "Espere unos segundos por favor...";
+      boton.disabled = true; // Deshabilitar el botón
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const message = document.getElementById('message');
+      const destino = "login";      
+      
+      if (!email || !password) {
+        message.textContent = 'Por favor completa los campos.';
+        message.style.display = 'block';
+        return;
+      }           
+      const body = {
+        destino,
+        email,
+        password,
+        codigosCacheExists,
+        timeStamp: "",
+      };
+      if (codigosCacheExists) {
+        body.codigosTimestamp = codigosVersionLocal;
+      }
+
+      try {
+        const response = await fetch(URL_ACTIVA, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },          
+          body: JSON.stringify(body)
+        });
+
+
+        const result = await response.json();
+        console.log("Resultado: ", result.success);
+        if (result.success) {
+          console.log('Login exitoso. ¡Bienvenido!');
+          // Guardar el token de sesión y la información del usuario
+          sessionStorage.setItem('elInventario', JSON.stringify(result.data));  
+          sessionStorage.setItem('codigosJSON', JSON.stringify(result.codigos));
+          sessionStorage.setItem('codigosVersionServer', result.codigosTimestamp);
+          sessionStorage.setItem('clientesCodigos', JSON.stringify(result.clientes));
+          sessionStorage.setItem('losResponsables', JSON.stringify(result.reponsables));
+          
+          if(result.requiereActualizarCodigos) {
+                    
+          }
+            window.location.href = 'main.html'; // Redirige a otra página.
+        } else {          
+          
+          console.log("No entró: " + result.message);
+          message.style.display = 'block';
+          throw new Error(result.message || "Credenciales inválidas");
+        }        
+      } catch (error) {
+        message.textContent = 'Error en la conexión al servidor.';
+        message.style.display = 'block';
+        console.error('Error:', error);
+      }
+    });
+  </script>
+  
+  <script src="utilidades_y.js"></script>
+</body>
+
+</html>
