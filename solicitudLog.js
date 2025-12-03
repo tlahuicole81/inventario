@@ -1,6 +1,6 @@
 'use strict';
     
-    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwN1pfpbKOuMKAGLJNyo0tGNCgBWU6dltBAxu1FtpzW2Fe8UHQHi4wB51zvBwtDoapV/exec';
+    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxROWYEUOWED9bizvFNq1Wv0upi_VNvXlt-Co2J9JgcTyLAuabDrI7xIo860C8e4ko0/exec';
 
     let CATALOGO_POR_CATEGORIA = {};
 // Mapa auxiliar: codigo -> { codigo, descrip, saco_kg, dosis, tiempo, categoria }
@@ -43,9 +43,8 @@ function actualizarContadores() {
 }
 
 async function cargarCatalogo() {
-    console.log("Modo SOLO YO");
-  const select = document.getElementById('codigoSelect');  
-  //console.log(`La URL a solicitar es: ${laURL}`);
+    console.log("Modo todo mundo");
+  const select = document.getElementById('codigoSelect');    
   const elMensaje = "Solicitar los códigos";
   try {
     select.innerHTML = '<option value="">Cargando catálogo...</option>';
@@ -63,7 +62,7 @@ async function cargarCatalogo() {
 
     const result = await response.json();
     if(result.success) {      
-      console.log("Llegó todo bien.");
+      console.log("Llegaron los códigos, todo bien.");
       //console.log(`Acá la info: ${JSON.stringify(result)}`);
     }    
 
@@ -357,5 +356,6 @@ window.addEventListener('load', function () {
       document.getElementById('mensajeCounter').textContent = len + ' / 300';
     });
 });
+
 
 
