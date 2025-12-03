@@ -1,7 +1,6 @@
 'use strict';
-
-    //
     
+    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbz-EUZUXYcTpGud8QQZjE68CSo55tsPhvbQ-uD_3WN02OrKd-fkXs41D-DfF1jj2x5upg/exec';
 
     // Catálogo tal cual lo regresa GAS: { categoria: [ { codigo, descrip, saco_kg, ... } ] }
     let CATALOGO_POR_CATEGORIA = {};
@@ -331,8 +330,6 @@
         enviarBtn.textContent = textoOriginal;
       }
     }
-
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxqscZFeRaA0oUSokAgUBPSBfmjQQ7l1SinXKMM89TDXCNyIsvqhU0_hIat3uNorDq5/exec';
     // Inicialización
     window.addEventListener('load', function() {
       cargarCatalogo();
@@ -356,3 +353,4 @@ const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxqscZFeRaA0oUSokA
         });
 
     });
+
