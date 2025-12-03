@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Inventario — Yair Inventario</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#0b6cff" />
+  <link rel="stylesheet" href="style2.css">
+</head>
+
+<body>
+  <div class="app" id="app">
+    <!-- inventario.html (sección dentro de tu página principal autenticada) -->
+    <section id="sec-inventario" class="inv-wrap">
+      <div class="inv-toolbar">
+        <input id="invSearch" class="inv-input" placeholder="Buscar PT, lote o código..." />
+        <select id="invFiltro" class="inv-input">
+          <option value="">Todo</option>
+          <option value="sinStock">Sólo con stock</option>
+          <option value="conEventos">Con ventas</option>
+        </select>
+      </div>
+
+      <div class="inv-table-wrap">
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th>PT</th>
+              <th>F. PT</th>
+              <th>Recib.</th>
+              <th>Vend.</th>
+              <th>Disp.</th>
+              <th>Ev.</th>
+            </tr>
+          </thead>
+          <tbody id="invBody">
+            <!-- Se llena por JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Modal para eventos (nivel 3) -->
+    <div id="modalEventos" class="inv-modal" hidden>
+      <div class="inv-modal-backdrop"></div>
+      <div class="inv-modal-card">
+        <div class="inv-modal-header">
+          <div>
+            <div class="inv-modal-title">Eventos del lote</div>
+            <div id="modalEventosSub" class="inv-modal-sub"></div>
+          </div>
+          <button id="modalEventosClose" class="inv-btn inv-btn-ghost">Cerrar</button>
+        </div>
+        <div id="modalEventosBody" class="inv-modal-body"></div>
+      </div>
+    </div>
+
+    <!-- ───────────── App ───────────── -->
+
+    <section id="sec-salidas" class="grid" data-tab="salidas">
+      <!-- Datos generales del evento de venta -->
+      <br>
+      <!--<div class="spacer"></div>-->
+      <div>
+        <header class="appbar">
+          <div class="brand">Eventos</div>
+        </header>
+      </div>
+      <div class="card panel grid cols-2">
+
+        <div class="field">
+          <label class="label">Responsable</label>
+          <select id="saResp" class="input">
+            <option value="">Seleccione...</option>
+            <!-- Se llena por JS con responsables.json -->
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label">Fecha de salida</label>
+          <input id="saFecha" class="input" type="date">
+        </div>
+
+        <div class="field" style="grid-column:1/-1">
+          <label class="label">Nombre del evento / venta</label>
+          <input id="saEvento" class="input" type="text" placeholder="Formato de eventos">
+        </div>
+
+        <div class="field">
+          <label class="label">Cliente</label>
+          <select id="saCliente" class="input">
+            <option value="">Seleccione cliente...</option>
+            <!-- JS con clientes.json -->
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label">Código</label>
+          <select id="saCodigo" class="input" disabled>
+            <option value="">Seleccione código...</option>
+            <!-- JS según cliente, mostrando también códigos sin stock como disabled -->
+          </select>
+        </div>
+
+        <!-- Detalle del código seleccionado (solo lectura) -->
+        <div class="field">
+          <label class="label">Categoría</label>
+          <input id="saCodCategoria" class="input" type="text" readonly>
+        </div>
+        <div class="field">
+          <label class="label">Presentación (kg por saco)</label>
+          <input id="saCodSacoKg" class="input" type="text" readonly>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label class="label">Descripción</label>
+          <!-- <textarea id="saCodDescrip" class="input" rows="2" readonly></textarea> -->
+          <input id="saCodDescrip" class="input" type="text" readonly>
+        </div>
+      </div>
+
+
+      <!-- Disponibilidad por PT / lote del código elegido -->
+      <div class="card panel" id="saDisponiblesCard">
+        <div class="row" style="justify-content:space-between; align-items:center;">
+          <div class="muted">Disponibilidad por PT / lote</div>
+          <div id="saCodInfo" class="pill"></div>
+        </div>
+        <div class="inv-table-wrap" style="margin-top:.5rem;">
+          <table class="inv-table" id="saTablaDisponibles">
+            <thead>
+              <tr>
+                <th>PT</th>
+                <th>F. PT</th>
+                <th>Lote</th>
+                <th>Disp. sacos</th>
+                <th>Sacos venta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+
+        <br>
+        <br>
+        <div class="row" style="justify-content:space-between; align-items:center;">
+          <div class="muted">Pre-orden del evento</div>
+          <!-- <button id="saBtnPreorden" class="btn">Generar pre-orden</button>-->
+        </div>
+        <div class="inv-table-wrap" style="margin-top:.5rem;">
+          <table class="inv-table" id="saTablaPreorden">
+            <thead>
+              <tr>
+                <th>PT</th>
+                <th>F. PT</th>
+                <th>Lote</th>
+                <th>Código</th>
+                <th>Sacos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Pre-orden -->
+            </tbody>
+          </table>
+        </div>
+
+        <br>
+        <!-- Finalizar -->
+        <div class="card panel">
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <div class="muted">Al confirmar la venta se enviará a GAS para actualizar el inventario.</div>
+            <button id="saBtnFinalizar" class="btn primary">Finalizar evento</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ************************************************************* -->
+
+    <section id="sec-solicitud" class="grid" data-tab="solicitud">
+      <br>
+      <!-- Selección de código -->
+      <div class="card panel">
+        <div>
+          <header class="appbar">
+            <div class="brand">Solicitud de material</div>
+          </header>
+          <br>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="field">
+            <label class="label">Código (catálogo)</label>
+            <select id="soCodSelect" class="input">
+              <option value="">Seleccione código...</option>
+              <!-- Se llena por JS con todos los códigos -->
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label">Código (escritura manual)</label>
+            <input id="soCodInput" class="input" type="text" placeholder="Escribe o pega código...">
+            <div id="soCodSug" class="so-sug"></div> <!-- sugerencia de material -->
+          </div>
+        </div>
+
+        <br>
+        <!-- Detalle del código -->
+        <div class="grid cols-3">
+          <div class="field">
+            <label class="label">Categoría</label>
+            <input id="soCategoria" class="input" type="text" readonly>
+          </div>
+          <div class="field">
+            <label class="label">Presentación (kg por saco)</label>
+            <input id="soSacoKg" class="input" type="text" readonly>
+          </div>
+          <div class="field">
+            <label class="label">Descripción</label>
+            <!-- <textarea id="soDescrip" class="input" rows="2" readonly></textarea> -->
+            <input id="soDescrip" class="input" type="text" readonly>
+          </div>
+        </div>
+
+        <br>
+        <!-- Cantidad a solicitar + agregar -->
+        <div class="grid cols-3">          
+          <div class="field">
+            <label class="label">Destino</label>
+            <select id="soDesti" class="input">
+              <option value="">Seleccione...</option>
+              <option value="soAlm">Almacén</option>
+              <option value="soDirec">Directo</option>
+            </select>
+          </div>
+
+          <div class="field" style="align-self:flex-end;">
+            <button id="soBtnAgregar" class="btn">Agregar código</button>
+          </div>
+        </div>
+
+        <br>
+        <!-- Tabla de solicitud -->
+        <div class="card panel">
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <div class="muted">Códigos en la solicitud</div>
+          </div>
+          <div class="inv-table-wrap" style="margin-top:.5rem;">
+            <table class="inv-table" id="soTablaSolicitud">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Categoría</th>
+                  <th>Sacos solicitados</th>
+                  <th></th> <!-- columna para botón quitar -->
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filas dinámicas -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br>
+        <!-- Enviar solicitud -->
+        <div class="row" style="justify-content:space-between; align-items:center;">
+          <div class="muted">Al presionar 'Enviar solicitud'.</div>
+          <button id="soBtnEnviar" class="btn primary">Enviar solicitud</button>
+        </div>
+      </div>
+    </section>
+    <!-- *************************************************************
+        ENTRADA DE MATERIAL 
+    -->
+    <section id="sec-entrada" class="grid" data-tab="entrada">
+      <br>
+      <!-- Selección de código -->
+      <div class="card panel">
+        <div>
+          <header class="appbar">
+            <div class="brand">Entrada de material</div>
+          </header>
+          <br>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="field">
+            <label class="label">PT</label>
+            <input id="entPTId" class="input" type="text">
+          </div>
+
+          <div class="field">
+            <label class="label">Fecha de entrada</label>
+            <input id="entFecha" class="input" type="date">
+          </div>
+
+        </div>
+        <br>
+        <div class="grid cols-3">
+          <div class="field">
+            <label class="label">Lote</label>
+            <input id="entLoteId" class="input" type="text">
+          </div>
+
+          <div class="field">
+            <label class="label">Código (catálogo)</label>
+            <select id="entCodSelect" class="input">
+              <option value="">Seleccione código...</option>
+              <!-- Se llena por JS con todos los códigos -->
+            </select>
+          </div>
+          <!-- Se llena automáticamente -->
+          <!-- SI NO ESTÁ EL CÓDIGO DESDE ACÁ SE PUEDE ACTUALIZAR y HABILITAR LA ENTRADA para
+            las id: entCategoria, entSacoKg y entDescrip  -->
+          <div class="field">
+            <label class="label">Código (escritura manual)</label>
+            <input id="entCodInput" class="input" type="text" placeholder="Escribe o pega código...">
+            <div id="entCodSug" class="so-sug"></div> <!-- Sugerencia de material-->
+          </div>
+        </div>
+        <br>
+
+        <!-- Detalle del código -->
+        <div class="grid cols-3">
+          <div class="field">
+            <label class="label">Categoría</label>
+            <input id="entCategoria" class="input" type="text" readonly>
+          </div>
+          <div class="field">
+            <label class="label">Presentación (kg por saco)</label>
+            <input id="entSacoKg" class="input" type="text" readonly>
+          </div>
+          <div class="field">
+            <label class="label">Descripción</label>
+            <!-- <textarea id="soDescrip" class="input" rows="2" readonly></textarea> -->
+            <input id="entDescrip" class="input" type="text" readonly>
+          </div>
+        </div>
+
+        <br>
+        <!-- Cantidad a solicitar + agregar -->
+        <div class="grid cols-3">
+          <div class="field">
+            <label class="label">Cantidad de sacos</label>
+            <input id="entCantidad" class="input" type="number" min="1" value="1">
+          </div>
+          <div class="field" style="align-self:flex-end;">
+            <button id="entBtnAgregar" class="btn">Agregar código</button>
+          </div>
+        </div>
+
+        <br>
+        <!-- Tabla de solicitud -->
+        <div class="card panel">
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <div class="muted">Códigos en la solicitud</div>
+          </div>
+          <div class="inv-table-wrap" style="margin-top:.5rem;">
+            <table class="inv-table" id="entTablaSolicitud">
+              <thead>
+                <tr>
+                <tr>
+                  <th>PT</th>
+                  <th>Código</th>
+                  <th>Lote</th>
+                  <th>Sacos</th>
+                  <th></th> <!-- columna para botón quitar -->
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filas dinámicas -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br>
+        <!-- Enviar solicitud -->
+        <div class="row" style="justify-content:space-between; align-items:center;">
+          <div class="muted">Al presionar se actualizará el inventario.</div>
+          <button id="agrBtnEnviar" class="btn primary">Agregar material</button>
+        </div>
+      </div>
+
+    </section>
+
+    <div id="view-app">
+      <main class="content">
+        <section id="sec-inventario" class="grid" data-tab="inventario">
+          <div class="card panel">
+            <div class="searchbar">          
+            </div>
+          </div>
+        </section>
+      </main>
+      <!-- Tabs -->
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-go="inventario">Inventario</button>
+        <button class="tab" data-go="salidas">Salidas</button>
+        <button class="tab" data-go="solicitud">Solicitud</button>
+        <button class="tab" data-go="entradas">Entradas</button>
+        <button class="tab" data-go="ajustes" id="tab-ajustes" hidden>Ajustes</button>
+      </nav>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script src="formateo.js"></script>
+  <script src="entradaMate.js"></script>
+  <script src="auxiliares.js"></script>
+  <script src="salidas.js"></script>
+  <script src="solicitud.js"></script>
+  <script src="inventario.js"></script>
+  <script src="utilidades_y.js"></script>
+
+</html>
