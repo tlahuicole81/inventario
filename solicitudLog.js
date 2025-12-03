@@ -52,7 +52,7 @@
         select.innerHTML = '<option value="">Cargando catálogo...</option>';
         const resp = await fetch(API_BASE_URL, {
           method: 'GET',
-          credentials: 'include' // para usar sesión de Google del usuario
+          //credentials: 'include' // para usar sesión de Google del usuario
         });
 
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -355,5 +355,6 @@
         });
 
     });
+
 
 
