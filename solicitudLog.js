@@ -1,7 +1,7 @@
 'use strict';
 
     //
-    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwbunJKQICQTmLAEW7Qf4snqlyRzLRGaovuEyjC0mqYTzIt3-j7mIM2EXuQPPTNVT_l/exec';
+    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbzRVYCDFPeudz0hhr7GWuCmGE2pr-2BpYqrGmSRw_RFjHu401L82GZIj58iMToLNaO9/exec';
 
     // Catálogo tal cual lo regresa GAS: { categoria: [ { codigo, descrip, saco_kg, ... } ] }
     let CATALOGO_POR_CATEGORIA = {};
@@ -52,7 +52,7 @@
         select.innerHTML = '<option value="">Cargando catálogo...</option>';
         const resp = await fetch(API_BASE_URL, {
           method: 'GET',
-          //credentials: 'include' // para usar sesión de Google del usuario
+          credentials: 'include' // para usar sesión de Google del usuario
         });
 
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -298,7 +298,7 @@
           headers: {
             'Content-Type': 'text/plain;charset=utf-8'
           },
-          //credentials: 'include',
+          credentials: 'include',
           body: JSON.stringify(payload)
         });
 
@@ -355,3 +355,4 @@
         });
 
     });
+
