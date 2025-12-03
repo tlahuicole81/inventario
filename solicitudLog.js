@@ -1,7 +1,7 @@
 'use strict';
 
-    // 🔧 PON AQUÍ la URL de tu WebApp de GAS (deployment /exec)
-    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbz-EUZUXYcTpGud8QQZjE68CSo55tsPhvbQ-uD_3WN02OrKd-fkXs41D-DfF1jj2x5upg/exec';
+    //
+    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwbunJKQICQTmLAEW7Qf4snqlyRzLRGaovuEyjC0mqYTzIt3-j7mIM2EXuQPPTNVT_l/exec';
 
     // Catálogo tal cual lo regresa GAS: { categoria: [ { codigo, descrip, saco_kg, ... } ] }
     let CATALOGO_POR_CATEGORIA = {};
@@ -353,4 +353,5 @@
           const len = this.value.length;
           document.getElementById('mensajeCounter').textContent = len + ' / 300';
         });
+
     });
