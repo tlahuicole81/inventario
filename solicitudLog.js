@@ -1,7 +1,7 @@
 'use strict';
 
     //
-    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbzRVYCDFPeudz0hhr7GWuCmGE2pr-2BpYqrGmSRw_RFjHu401L82GZIj58iMToLNaO9/exec';
+    const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwfJzFqP3FrPrptO7QwDIgbOGdo6e-yX1Iu-iYAz6Rq9io1FMpAVloTbPxxpXbYLDVG/exec';
 
     // Catálogo tal cual lo regresa GAS: { categoria: [ { codigo, descrip, saco_kg, ... } ] }
     let CATALOGO_POR_CATEGORIA = {};
@@ -355,4 +355,5 @@
         });
 
     });
+
 
