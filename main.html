@@ -13,6 +13,7 @@
 <body>
   <div class="app" id="app">
     <!-- inventario.html (sección dentro de tu página principal autenticada) -->
+
     <section id="sec-inventario" class="inv-wrap">
       <div class="inv-toolbar">
         <input id="invSearch" class="inv-input" placeholder="Buscar PT, lote o código..." />
@@ -60,119 +61,127 @@
     <!-- ───────────── App ───────────── -->
 
     <section id="sec-salidas" class="grid" data-tab="salidas">
-      <!-- Datos generales del evento de venta -->
       <br>
-      <!--<div class="spacer"></div>-->
-      <div>
-        <header class="appbar">
-          <div class="brand">Eventos</div>
-        </header>
-      </div>
-      <div class="card panel grid cols-2">
-
-        <div class="field">
-          <label class="label">Responsable</label>
-          <select id="saResp" class="input">
-            <option value="">Seleccione...</option>
-            <!-- Se llena por JS con responsables.json -->
-          </select>
+      <!-- Datos generales del evento de venta -->
+      <div class="card panel">
+        <div>
+          <header class="appbar">
+            <div class="brand">Eventos</div>
+          </header>
+          <br>
         </div>
 
-        <div class="field">
-          <label class="label">Fecha de salida</label>
-          <input id="saFecha" class="input" type="date">
+        <div class="grid cols-2">
+          <div class="field">
+            <label class="label">Responsable</label>
+            <select id="saResp" class="input">
+              <option value="">Seleccione...</option>
+              <!-- Se llena por JS con responsables.json -->
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label">Fecha de salida</label>
+            <input id="saFecha" class="input" type="date">
+          </div>
+          <br>
         </div>
 
-        <div class="field" style="grid-column:1/-1">
-          <label class="label">Nombre del evento / venta</label>
-          <input id="saEvento" class="input" type="text" placeholder="Formato de eventos">
+        <div class="grid cols-2">
+          <div class="field">
+            <label class="label">Nombre del evento / venta</label>
+            <input id="saEvento" class="input" type="text" placeholder="Formato de eventos">
+          </div>
+
+          <div class="field">
+            <label class="label">Cliente</label>
+            <select id="saCliente" class="input">
+              <option value="">Seleccione cliente...</option>
+              <!-- JS con clientes.json -->
+            </select>
+          </div>
+          <br>
         </div>
 
-        <div class="field">
-          <label class="label">Cliente</label>
-          <select id="saCliente" class="input">
-            <option value="">Seleccione cliente...</option>
-            <!-- JS con clientes.json -->
-          </select>
+        <div class="grid cols-2">
+          <div class="field">
+            <label class="label">Código</label>
+            <select id="saCodigo" class="input" disabled>
+              <option value="">Seleccione código...</option>
+              <!-- JS según cliente, mostrando también códigos sin stock como disabled -->
+            </select>
+          </div>
+          <!-- Detalle del código seleccionado (solo lectura) -->
+          <div class="field">
+            <label class="label">Categoría</label>
+            <input id="saCodCategoria" class="input" type="text" readonly>
+          </div>
+          <br>
         </div>
 
-        <div class="field">
-          <label class="label">Código</label>
-          <select id="saCodigo" class="input" disabled>
-            <option value="">Seleccione código...</option>
-            <!-- JS según cliente, mostrando también códigos sin stock como disabled -->
-          </select>
+        <div class="grid cols-2">
+          <div class="field">
+            <label class="label">Presentación (kg por saco)</label>
+            <input id="saCodSacoKg" class="input" type="text" readonly>
+          </div>
+          <div class="field">
+            <label class="label">Descripción</label>            
+            <input id="saCodDescrip" class="input" type="text" readonly>
+          </div>
         </div>
-
-        <!-- Detalle del código seleccionado (solo lectura) -->
-        <div class="field">
-          <label class="label">Categoría</label>
-          <input id="saCodCategoria" class="input" type="text" readonly>
-        </div>
-        <div class="field">
-          <label class="label">Presentación (kg por saco)</label>
-          <input id="saCodSacoKg" class="input" type="text" readonly>
-        </div>
-        <div class="field" style="grid-column:1/-1">
-          <label class="label">Descripción</label>
-          <!-- <textarea id="saCodDescrip" class="input" rows="2" readonly></textarea> -->
-          <input id="saCodDescrip" class="input" type="text" readonly>
-        </div>
-      </div>
-
-
-      <!-- Disponibilidad por PT / lote del código elegido -->
-      <div class="card panel" id="saDisponiblesCard">
-        <div class="row" style="justify-content:space-between; align-items:center;">
-          <div class="muted">Disponibilidad por PT / lote</div>
-          <div id="saCodInfo" class="pill"></div>
-        </div>
-        <div class="inv-table-wrap" style="margin-top:.5rem;">
-          <table class="inv-table" id="saTablaDisponibles">
-            <thead>
-              <tr>
-                <th>PT</th>
-                <th>F. PT</th>
-                <th>Lote</th>
-                <th>Disp. sacos</th>
-                <th>Sacos venta</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Filas dinámicas -->
-            </tbody>
-          </table>
-        </div>
-
         <br>
-        <br>
-        <div class="row" style="justify-content:space-between; align-items:center;">
-          <div class="muted">Pre-orden del evento</div>
-          <!-- <button id="saBtnPreorden" class="btn">Generar pre-orden</button>-->
-        </div>
-        <div class="inv-table-wrap" style="margin-top:.5rem;">
-          <table class="inv-table" id="saTablaPreorden">
-            <thead>
-              <tr>
-                <th>PT</th>
-                <th>F. PT</th>
-                <th>Lote</th>
-                <th>Código</th>
-                <th>Sacos</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Pre-orden -->
-            </tbody>
-          </table>
-        </div>
-
-        <br>
-        <!-- Finalizar -->
-        <div class="card panel">
+        <!-- Disponibilidad por PT / lote del código elegido -->
+        <div class="card panel" id="saDisponiblesCard">
           <div class="row" style="justify-content:space-between; align-items:center;">
-            <div class="muted">Al confirmar la venta se enviará a GAS para actualizar el inventario.</div>
-            <button id="saBtnFinalizar" class="btn primary">Finalizar evento</button>
+            <div class="muted">Disponibilidad por PT / lote</div>
+            <div id="saCodInfo" class="pill"></div>
+          </div>
+          <div class="inv-table-wrap" style="margin-top:.5rem;">
+            <table class="inv-table" id="saTablaDisponibles">
+              <thead>
+                <tr>
+                  <th>PT</th>
+                  <th>F. PT</th>
+                  <th>Lote</th>
+                  <th>Disp. sacos</th>
+                  <th>Sacos venta</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filas dinámicas -->
+              </tbody>
+            </table>
+          </div>
+
+          <br>
+          <br>
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <div class="muted">Pre-orden del evento</div>            
+          </div>
+          <div class="inv-table-wrap" style="margin-top:.5rem;">
+            <table class="inv-table" id="saTablaPreorden">
+              <thead>
+                <tr>
+                  <th>PT</th>
+                  <th>F. PT</th>
+                  <th>Lote</th>
+                  <th>Código</th>
+                  <th>Sacos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Pre-orden -->
+              </tbody>
+            </table>
+          </div>
+
+          <br>
+          <!-- Finalizar -->
+          <div class="card panel">
+            <div class="row" style="justify-content:space-between; align-items:center;">
+              <div class="muted">Al confirmar la venta se enviará a GAS para actualizar el inventario.</div>
+              <button id="saBtnFinalizar" class="btn primary">Finalizar evento</button>
+            </div>
           </div>
         </div>
       </div>
@@ -271,7 +280,10 @@
           <button id="soBtnEnviar" class="btn primary">Enviar solicitud</button>
         </div>
       </div>
+
     </section>
+
+
     <!-- *************************************************************
         ENTRADA DE MATERIAL 
     -->
@@ -309,12 +321,9 @@
             <label class="label">Código (catálogo)</label>
             <select id="entCodSelect" class="input">
               <option value="">Seleccione código...</option>
-              <!-- Se llena por JS con todos los códigos -->
+              
             </select>
           </div>
-          <!-- Se llena automáticamente -->
-          <!-- SI NO ESTÁ EL CÓDIGO DESDE ACÁ SE PUEDE ACTUALIZAR y HABILITAR LA ENTRADA para
-            las id: entCategoria, entSacoKg y entDescrip  -->
           <div class="field">
             <label class="label">Código (escritura manual)</label>
             <input id="entCodInput" class="input" type="text" placeholder="Escribe o pega código...">
@@ -387,34 +396,34 @@
     </section>
 
     <div id="view-app">
-      <main class="content">
-        <section id="sec-inventario" class="grid" data-tab="inventario">
-          <div class="card panel">
-            <div class="searchbar">          
-            </div>
-          </div>
-        </section>
-      </main>
+      <br>
+      <div class="content"></div>
       <!-- Tabs -->
       <nav class="tabs" role="tablist">
         <button class="tab active" data-go="inventario">Inventario</button>
-        <button class="tab" data-go="salidas">Salidas</button>
+        <button class="tab" data-go="salidas">Eventos</button>
         <button class="tab" data-go="solicitud">Solicitud</button>
         <button class="tab" data-go="entradas">Entradas</button>
-        <button class="tab" data-go="ajustes" id="tab-ajustes" hidden>Ajustes</button>
       </nav>
     </div>
-
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+
+    <div id="overlay" style="
+  display:none;
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.5);
+  justify-content:center; align-items:center;
+  color:white; font-size:20px;">
+      Enviando...
+    </div>
   </div>
-
-  <script src="formateo.js"></script>
-  <script src="entradaMate.js"></script>
-  <script src="auxiliares.js"></script>
-  <script src="salidas.js"></script>
-  <script src="solicitud.js"></script>
-  <script src="inventario.js"></script>
-  <script src="utilidades_y.js"></script>
-
+</body>
+<script src="formateo.js"></script>
+<script src="entradaMate.js"></script>
+<script src="auxiliares.js"></script>
+<script src="salidas.js"></script>
+<script src="solicitud.js"></script>
+<script src="inventario.js"></script>
+<script src="utilidades_y.js"></script>
 </html>
